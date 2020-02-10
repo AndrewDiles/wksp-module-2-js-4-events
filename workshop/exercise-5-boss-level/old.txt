@@ -1,0 +1,415 @@
+const main = document.getElementById('main');
+const d1 = document.getElementById('d1');
+const d2 = document.getElementById('d2');
+
+const startButton = document.createElement('button');
+const instructionsButton = document.createElement('button');
+const instructions = document.createElement('button');
+const instructionsexist = document.createElement('button');
+const instructionsxbutton = document.createElement('button');
+const kirby = document.createElement('img');
+const sonic = document.createElement('img');
+const signal = document.createElement('img');
+const centerCoin = document.createElement('img');
+
+
+// let backgroundmusic = new Audio('./sounds/bg.mp3');                     // leaving these here, but they don't work due to chrome protectin
+// backgroundmusic.play();                                                 // users from unwanted sound until user has interacting with the site.
+
+let p1points = 0;
+let p2points = 0;
+let gameOver = false;
+let roundOne = true;
+let isMusicOn = false;
+
+const highlightOn = function(){
+    this.style.borderColor = 'gold';
+    this.style.color = 'gold';
+    console.log('on');
+}
+
+const highlightOff = function(){
+    this.style.borderColor = 'rgb(132, 146, 165)';
+    this.style.color = 'white';
+    console.log('off');
+}
+
+const menu = function(){
+    
+
+    main.style.backgroundImage = 'url(imgs/bg.gif)';
+    startButton.style.bottom = '10%';
+    instructionsButton.style.top = '10%';
+    startButton.innerText = 'Start game';
+    instructionsButton.innerText = 'Instructions';
+    startButton.style.display = 'inline-block;';
+    instructionsButton.style.display = 'inline-block;';
+    d1.appendChild(startButton);
+    d2.appendChild(instructionsButton);
+    startButton.addEventListener('mouseover', highlightOn);
+    startButton.addEventListener('mouseout', highlightOff);
+    instructionsButton.addEventListener('mouseover', highlightOn);
+    instructionsButton.addEventListener('mouseout', highlightOff);
+    startButton.addEventListener('click', gameOn); 
+    instructionsButton.addEventListener('click', goToInstructions);
+}
+
+const returnToMenuFromI = function(){
+    instructionsxbutton.removeEventListener('mouseover', highlightOn);
+    instructionsxbutton.removeEventListener('mouseout', highlightOff);
+    instructionsxbutton.removeEventListener('click', returnToMenuFromI);
+    instructions.style.display = 'none';
+    instructionsxbutton.style.display = 'none';
+    location.reload();          //cheap trick, cuts music, should go back if I have time.
+}
+
+const goToInstructions = function(){
+    startButton.removeEventListener('mouseover', highlightOn);
+    startButton.removeEventListener('mouseout', highlightOff);
+    instructionsButton.removeEventListener('mouseover', highlightOn);
+    instructionsButton.removeEventListener('mouseout', highlightOff);
+    startButton.removeEventListener('click', gameOn);
+    instructionsButton.removeEventListener('click', goToInstructions);
+
+    if (isMusicOn===false){
+        let backgroundmusic = new Audio('./sounds/bg.mp3');                     //work around for turning on music after ineraction
+        backgroundmusic.play();
+        isMusicOn = true;
+    }
+
+    startButton.style.display = 'none';
+    instructionsButton.style.display = 'none';
+    instructions.innerText = "Two players wait for a signal to start after a random delay. Once the start signal, first person to press their key wins. If a player presses before the signal appears, they lose. Player one presses the q key and player 2 presses the p key.";
+    instructions.style.top = '50%';
+    instructions.style.right = '20%';
+    instructions.style.padding = '50px 15px';
+    instructions.style.cursor = 'arrow';
+    instructions.style.outline = '0';
+    instructions.style.position = 'flex';
+    instructions.style.width = '60%';
+    instructions.style.height = 'auto';
+
+    instructionsxbutton.style.width = '30px';
+    instructionsxbutton.style.minWidth = '30px';
+    instructionsxbutton.style.height = '25px';
+    instructionsxbutton.style.minHeight = '25px';
+    instructionsxbutton.innerText = 'X';
+    instructionsxbutton.style.position = 'relative';
+    instructionsxbutton.style.top = '50%';
+    instructionsxbutton.style.right = '-28.75%';
+    instructionsxbutton.style.border = 'none';
+    instructionsxbutton.style.padding = '0';
+    instructionsxbutton.style.color = 'grey';
+    instructionsxbutton.style.backgroundColor = 'silver';
+    instructionsxbutton.style.border = '1px solid rgb(132, 146, 165)';
+    d1.appendChild(instructions);
+    d1.appendChild(instructionsxbutton);
+    instructionsxbutton.addEventListener('mouseover', highlightOn);
+    instructionsxbutton.addEventListener('mouseout', highlightOff);
+    instructionsxbutton.addEventListener('click', returnToMenuFromI);
+    main.addEventListener('keypress', escape);
+    function escape(e) {
+        console.log(e.keyCode);
+        if(e.key === "q"){returnToMenuFromI();}
+        else if(e.key == "Esc"){returnToMenuFromI();}
+        else if(e.key == "Escape"){returnToMenuFromI();}
+        else if(e.which == "27"){returnToMenuFromI();}
+    }
+}
+
+const gameOn = function(){
+    if (roundOne === true) {
+        startButton.removeEventListener('mouseover', highlightOn);
+        startButton.removeEventListener('mouseout', highlightOff);
+        instructionsButton.removeEventListener('mouseover', highlightOn);
+        instructionsButton.removeEventListener('mouseout', highlightOff);
+        startButton.removeEventListener('click', gameOn);
+        instructionsButton.removeEventListener('click', goToInstructions);
+
+        startButton.style.display = 'none';
+        instructionsButton.style.display = 'none';
+
+        if (isMusicOn===false){
+            let backgroundmusic = new Audio('./sounds/bg.mp3');                     //work around for turning on music after ineraction
+            backgroundmusic.play();
+            isMusicOn = true;
+        }
+
+        signal.src = './imgs/signal.png';
+        signal.style.height = '25%';
+        signal.style.position = 'absolute';
+        signal.style.right = '5%';
+        signal.style.top = '0';
+        signal.style.transform = 'rotate(-130deg)';
+        signal.style.display = 'none';                          //this is the signal whose display must be flickered
+        d1.appendChild(signal);
+
+        centerCoin.src = './imgs/prize.gif';
+        centerCoin.style.height = '30%';
+        centerCoin.style.position = 'absolute';
+        centerCoin.style.bottom = '10%';
+        centerCoin.style.left = '47%';
+        d2.appendChild(centerCoin);
+    }
+
+    kirby.style.height = '30%';
+    kirby.style.position = 'absolute';
+    kirby.style.bottom = '10%';
+    kirby.style.left = '5%';
+    sonic.style.height = '45%';
+    sonic.style.position = 'absolute';
+    sonic.style.bottom = '10%';
+    sonic.style.right = '5%';
+    kirby.src = './imgs/p1.gif';
+    sonic.src = './imgs/p2.gif';
+
+    d2.appendChild(kirby);
+    d2.appendChild(sonic);
+
+    let timerdone = false;
+    let rot = 0;
+    let drop = 0;
+    const signalfall = function(){
+        // signal.style.transform = `translateY(${drop})`;
+        signal.style.top = '${drop}px';                                            // issue with signl drop
+        signal.style.transform = `rotate(${rot}deg)`;                           //interval must be happening, as I can make it spin with this
+        rot += 3;
+        drop -= 5;
+    }
+
+    const timerdoneset = function(){
+        timerdone = true;
+        let whatwasthatnoise = new Audio('./sounds/signal.mp3');     
+        whatwasthatnoise.play();
+        signal.style.display = 'block';
+        setInterval(signalfall, 10);
+    }
+    setTimeout(timerdoneset, 10000*Math.random());
+
+    function p1activate(e) {                                                    // function to detect p1 entry
+        console.log(e.keyCode);                                                 // figuring out how pc interprets button press
+        if((e.key === "q") || (e.which == "113") ){                             // testing if it was p1 thst attacked
+            console.log('p1 attacks!')                                          // testing to make sure it works
+            if(timerdone === false){                                            // A: test if too early
+                console.log('But it was too early...');
+                p2points ++;                                                    // give point to oppo
+                clearTimeout(timerdoneset);                                     // end the signal timer
+            }
+            else{                                                               // A: if not too early
+                console.log('success');
+                p1points ++;                                                    // p1 gets point
+            }   
+            if ( (p2points >= 2) || (p1points >= 2) ){                          // B: does a player have enough points?   
+// Funny note here, I put >= because of a funny incident I had once while playing starfox 64 where I jumped from 4 to 6 kills at the same moment after killing two opponents with the same bomb.
+// The deathmatch ends when a player hits 5 kills, but because I went from 4 to 6 and they were testing for == 5 instead of >= 5, I didn't win.
+// I ended up getting to 8 or 9 kills, before one of my friends hit 5 and claimed he won to tease me haha
+// my kill count went off the screen.  It was quite interesting at the time.
+                gameOver = true;                                                // end game condition is satisfied
+                main.removeEventListener('keypress', p1activate);               // silence the listeners
+                main.removeEventListener('keypress', p2activate);
+                removeInterval(signalfall, 10);                                 // kill signal's animation
+                gameEnd();                                                      // begin endgame() function
+            }
+            else {
+                main.removeEventListener('keypress', p1activate);               // silence the listeners
+                main.removeEventListener('keypress', p2activate);
+                removeInterval(signalfall, 10);                                 // kill signal's animation
+                gameOn();                                                       // start up game() again for another round.
+            }
+        }
+    }
+    function p2activate(e) {                                                    // Same as above but with p1 and p2 inversed
+        console.log(e.keyCode);
+        if((e.key === "p") || (e.which == "112") ){
+            console.log('p2 attacks!')
+            if(timerdone === false){
+                console.log('But it was too early...');
+                p1points ++;
+                clearTimeout(timerdoneset);
+            }
+            else{
+                console.log('success');
+                p2points ++;
+        
+            }
+            if ( (p2points >= 2) || (p1points >= 2) ){
+                gameOver = true;
+                main.removeEventListener('keypress', p1activate);
+                main.removeEventListener('keypress', p2activate);
+                removeInterval(signalfall, 10);                                 // kill signal's animation
+                gameEnd();
+            }
+            else {
+                main.removeEventListener('keypress', p1activate);
+                main.removeEventListener('keypress', p2activate);
+                removeInterval(signalfall, 10);                                 // kill signal's animation
+                gameOn();
+            }
+        }
+    }
+
+    main.addEventListener('keypress', p1activate);                              // activate the listeners for p1's q and p2's p
+    main.addEventListener('keypress', p2activate);
+}
+
+const gameEnd = function(){
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+menu();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const main = document.getElementById('main');
+// const d1 = document.getElementById('d1');
+// const d2 = document.getElementById('d2');
+
+// const startButton = document.createElement('button');
+// const instructionsButton = document.createElement('button');
+// const instructions = document.createElement('button');
+// const instructionsexist = document.createElement('button');
+// const instructionsxbutton = document.createElement('button');
+
+
+
+
+
+
+// const highlightOn = function(){
+//     this.style.borderColor = 'gold';
+//     this.style.color = 'gold';
+//     console.log('on');
+// }
+
+// const highlightOff = function(){
+//     this.style.borderColor = 'rgb(132, 146, 165)';
+//     this.style.color = 'white';
+//     console.log('off');
+// }
+
+// const menu = function(){
+//     main.style.backgroundImage = 'url(imgs/bg.gif)';
+//     d1.style.paddingTop = '27.5%';
+//     d1.style.height = '15%';
+//     d2.style.paddingBottom = '27.5%';
+//     d2.style.height = '15%';
+//     startButton.innerText = 'Start game';
+//     instructionsButton.innerText = 'Instructions';
+//     startButton.style.display = 'inline-block;';
+//     instructionsButton.style.display = 'inline-block;';
+//     d1.appendChild(startButton);
+//     d2.appendChild(instructionsButton);
+//     startButton.addEventListener('mouseover', highlightOn);
+//     startButton.addEventListener('mouseout', highlightOff);
+//     instructionsButton.addEventListener('mouseover', highlightOn);
+//     instructionsButton.addEventListener('mouseout', highlightOff);
+//     startButton.addEventListener('click', gameOn); 
+//     instructionsButton.addEventListener('click', goToInstructions);
+// }
+
+// const returnToMenuFromI = function(){
+//     instructionsxbutton.removeEventListener('mouseover', highlightOn);
+//     instructionsxbutton.removeEventListener('mouseout', highlightOff);
+//     instructionsxbutton.removeEventListener('click', returnToMenuFromI);
+//     instructions.style.display = 'none';
+//     instructionsxbutton.style.display = 'none';
+//     location.reload();
+// }
+
+// const goToInstructions = function(){
+//     startButton.removeEventListener('mouseover', highlightOn);
+//     startButton.removeEventListener('mouseout', highlightOff);
+//     instructionsButton.removeEventListener('mouseover', highlightOn);
+//     instructionsButton.removeEventListener('mouseout', highlightOff);
+//     startButton.removeEventListener('click', gameOn);
+//     instructionsButton.removeEventListener('click', goToInstructions);
+
+
+
+//     startButton.style.display = 'none';
+//     instructionsButton.style.display = 'none';
+//     instructions.innerText = "Two players wait for a signal to start after a random delay. Once the start signal, first person to press their key wins. If a player presses before the signal appears, they lose. Player one presses the q key and player 2 presses the p key.";
+//     instructions.style.top = '50%';
+//     instructions.style.left = '50%';
+//     instructions.style.padding = '50px 15px';
+//     instructions.style.cursor = 'arrow';
+//     instructions.style.outline = '0';
+//     instructionsxbutton.style.width = '30px';
+//     instructionsxbutton.style.minWidth = '30px';
+//     instructionsxbutton.style.height = '25px';
+//     instructionsxbutton.style.minHeight = '25px';
+//     instructionsxbutton.innerText = 'X';
+//     instructionsxbutton.style.position = 'relative';
+//     instructionsxbutton.style.top = '-48px';
+//     instructionsxbutton.style.right = '35px';
+//     instructionsxbutton.style.border = 'none';
+//     instructionsxbutton.style.padding = '0';
+//     instructionsxbutton.style.color = 'grey';
+//     instructionsxbutton.style.backgroundColor = 'silver';
+//     d1.appendChild(instructions);
+//     d1.appendChild(instructionsxbutton);
+//     instructionsxbutton.addEventListener('mouseover', highlightOn);
+//     instructionsxbutton.addEventListener('mouseout', highlightOff);
+//     instructionsxbutton.addEventListener('click', returnToMenuFromI);
+//     function escape(e) {
+//         if(e.key === "Escape"){returnToMenuFromI();}
+//     }
+
+// }
+
+// const gameOn = function(){
+
+// }
+
+//menu();
